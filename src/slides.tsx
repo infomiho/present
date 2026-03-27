@@ -13,13 +13,13 @@ export const slides = [
   <Slide>
     <div class="slide-label">Components</div>
     <h2>What's in the box</h2>
-    <PointList items={[
+    <PointList numbered={false} items={[
       'Code blocks with Shiki syntax highlighting',
+      'Line numbers and line highlighting',
       'Before/after comparisons',
       'File tree visualizations with colored badges',
-      'Fork grids for presenting choices',
-      'Question lists for discussion slides',
-      'Sub-step progressive reveal on any slide',
+      'Fork grids for presenting decisions',
+      'Progressive reveal on any slide',
     ]} />
   </Slide>,
 
@@ -38,6 +38,31 @@ async function getUsers(): Promise<User[]> {
   return response.json()
 }
     `}</Code>
+  </Slide>,
+
+  <Slide subSteps={2}>
+    {(step) => (
+      <>
+        <div class="slide-label">Code walkthrough</div>
+        <h2>Line highlighting</h2>
+        <Code
+          lang="typescript"
+          filename="api.ts"
+          lineNumbers
+          highlight={step === 1 ? "1-4" : step === 2 ? "6-9" : undefined}
+        >{`
+interface User {
+  id: string
+  name: string
+}
+
+async function getUsers(): Promise<User[]> {
+  const response = await fetch('/api/users')
+  return response.json()
+}
+        `}</Code>
+      </>
+    )}
   </Slide>,
 
   <Slide>
@@ -59,17 +84,21 @@ const { name, port, debug } = config
     />
   </Slide>,
 
-  <Slide>
-    <div class="slide-label">Choices</div>
-    <h2>The fork in the road</h2>
-    <ForkGrid>
-      <ForkCard title="Option A" highlighted>
-        <p>The bold approach. Fewer moving parts, more opinionated, requires buy-in from the team.</p>
-      </ForkCard>
-      <ForkCard title="Option B">
-        <p>The safe approach. Incremental adoption, lower risk, but doesn't unlock the full potential.</p>
-      </ForkCard>
-    </ForkGrid>
+  <Slide subSteps={1}>
+    {(step) => (
+      <>
+        <div class="slide-label">Decision</div>
+        <h2>The fork in the road</h2>
+        <ForkGrid>
+          <ForkCard title="Option A" highlighted={step >= 1}>
+            <p>The bold approach. Fewer moving parts, more opinionated, requires buy-in from the team.</p>
+          </ForkCard>
+          <ForkCard title="Option B" dimmed={step >= 1}>
+            <p>The safe approach. Incremental adoption, lower risk, but doesn't unlock the full potential.</p>
+          </ForkCard>
+        </ForkGrid>
+      </>
+    )}
   </Slide>,
 
   <Slide>
@@ -95,22 +124,26 @@ const { name, port, debug } = config
       <>
         <div class="slide-label">Sub-steps</div>
         <h2>Progressive reveal</h2>
-        <PointList items={[
+        <PointList step={step} items={[
           'This point is always visible',
-          ...(step >= 1 ? ['This appears on the first arrow press'] : []),
-          ...(step >= 2 ? ['And this on the second'] : []),
+          'This appears on the first arrow press',
+          'And this on the second',
         ]} />
       </>
     )}
   </Slide>,
 
-  <Slide>
-    <div class="slide-label">Discussion</div>
-    <h2>Open questions</h2>
-    <QuestionList items={[
-      'What do you think about this approach?',
-      'Where should we go from here?',
-      'What are we missing?',
-    ]} />
+  <Slide subSteps={2}>
+    {(step) => (
+      <>
+        <div class="slide-label">Discussion</div>
+        <h2>Open questions</h2>
+        <QuestionList step={step} items={[
+          'What do you think about this approach?',
+          'Where should we go from here?',
+          'What are we missing?',
+        ]} />
+      </>
+    )}
   </Slide>,
 ]

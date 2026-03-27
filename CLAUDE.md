@@ -15,11 +15,11 @@ All components are exported from `src/components/index.ts`:
 
 - `Deck` - Wraps all slides. Handles keyboard navigation and progress bar.
 - `Slide` - Single slide with transitions. Props: `className`, `subSteps`. For progressive reveal, pass a render function as children: `<Slide subSteps={2}>{(step) => ...}</Slide>`
-- `Code` - Shiki-powered syntax highlighting. Props: `lang`, `filename`. Children must be a string.
+- `Code` - Shiki-powered syntax highlighting. Props: `lang`, `filename`, `lineNumbers` (boolean), `highlight` (range string like `"3-5, 8"`). Highlighted lines get an accent left border + tint, non-highlighted lines dim. Children must be a string.
 - `Compare` - Before/after side-by-side. Props: `before`, `after`, `beforeLabel`, `afterLabel`.
-- `PointList` - Numbered bullet list. Props: `items` (array).
-- `QuestionList` - Discussion questions with `?` badges. Props: `items` (array).
-- `ForkGrid` + `ForkCard` - Two-option choice layout. `ForkCard` props: `title`, `highlighted`.
+- `PointList` - Bullet list. Props: `items` (array), `numbered` (boolean, default true - set false for plain dots), `step` (number - controls how many items are visible, for progressive reveal).
+- `QuestionList` - Discussion questions with `?` badges. Props: `items` (array), `step` (number - progressive reveal).
+- `ForkGrid` + `ForkCard` - Two-option decision layout. `ForkCard` props: `title`, `highlighted`, `dimmed`. Use with sub-steps to show both options then resolve to the chosen one.
 - `FileTree` + `Folder` + `File` - Directory tree visualization. `File` props: `name`, `active`, `dimmed`, `badges` (array of `{ label, color? }`).
 
 ## Theming

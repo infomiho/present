@@ -7,23 +7,11 @@ You are creating a presentation for the user. Follow these phases in order.
 
 ## Phase 1: Intake
 
-Ask these questions one at a time, waiting for answers:
-
-1. **What's the topic?** What are you presenting, and what's the core message?
-2. **Who's the audience?** Coworkers, conference, clients, students? What do they already know?
-3. **Any reference material?** Existing docs, code, notes, or files you want to draw from?
+Ask the user: **What are you presenting?**
 
 ## Phase 2: Content interview
 
-Follow the interview process described in [references/grill-me.md](references/grill-me.md). Apply it specifically to the presentation content:
-
-- What's the thesis? Do they have a recommendation or are they presenting options?
-- What's the narrative arc? What order makes the ideas land?
-- What are the key examples? Code, diagrams, comparisons?
-- What are the honest downsides or open questions?
-- What should the audience walk away with?
-
-Keep going until you have a clear picture of every slide's purpose and content.
+Follow the interview process in [references/grill-me.md](references/grill-me.md). Your job is to help the user find the story in their content - not just what they want to say, but the narrative that makes it land.
 
 ## Phase 3: Slide outline
 
@@ -52,8 +40,8 @@ Edit `src/slides.tsx` to create the presentation content. Key guidelines:
 
 - **Read the existing template files first.** Understand the available components by reading `src/components/index.ts` and the individual component files.
 - **Use the component library:** `Slide`, `Code`, `Compare`, `PointList`, `QuestionList`, `ForkGrid`/`ForkCard`, `FileTree`/`Folder`/`File`. See `src/components/` for the full API.
-- **Code is Shiki-powered.** Use the `Code` component with the `lang` prop. Supports: typescript, javascript, tsx, jsx, json, bash, html, css, yaml, markdown. Add more languages by editing `src/components/Code.tsx`.
-- **Sub-steps** for progressive reveal: `<Slide subSteps={N}>{(step) => ...}</Slide>`
+- **Code is Shiki-powered.** Use the `Code` component with the `lang` prop. Languages are loaded on demand. Use `lineNumbers` for line numbers and `highlight="3-5, 8"` for line highlighting (accent border + tint, rest dims).
+- **Sub-steps** for progressive reveal: `<Slide subSteps={N}>{(step) => ...}</Slide>`. Components like `PointList` and `QuestionList` accept a `step` prop to control visible items. `ForkCard` accepts `highlighted` and `dimmed` for decision resolution.
 - **Custom components** are encouraged. If a slide needs a visualization that doesn't fit the existing components, create it directly in `src/slides.tsx` or as a new component in `src/components/`.
 - **Branding** is controlled by CSS variables in `src/styles.css`. The template ships a dark, code-forward theme. Adjust `--accent`, `--accent-rgb`, and related variables to match the user's brand if they ask.
 - Keep slide content focused. One idea per slide.
