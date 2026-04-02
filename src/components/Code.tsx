@@ -38,14 +38,19 @@ export function Code({
   filename,
   lineNumbers,
   highlight,
+  lineGroups,
+  step,
 }: {
   children: string
   lang?: string
   filename?: string
   lineNumbers?: boolean
   highlight?: string
+  lineGroups?: Array<{ lines: string; visibleFrom: number; visibleUntil?: number; noHighlight?: boolean; swap?: boolean }>
+  step?: number
 }) {
   const [tokens, setTokens] = useState<Token[][] | null>(null)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -58,7 +63,20 @@ export function Code({
     return () => { cancelled = true }
   }, [children, lang])
 
+  useEffect(() => {
+    requestAnimationFrame(() => setMounted(true))
+  }, [])
+
   const highlightedLines = highlight ? parseHighlight(highlight) : null
+
+  const lineVis = new Map<number, { visibleFrom: number; visibleUntil?: number; noHighlight?: boolean; swap?: boolean }>()
+  if (lineGroups) {
+    for (const group of lineGroups) {
+      for (const ln of parseHighlight(group.lines)) {
+        lineVis.set(ln, { visibleFrom: group.visibleFrom, visibleUntil: group.visibleUntil, noHighlight: group.noHighlight, swap: group.swap })
+      }
+    }
+  }
 
   return (
     <div class="code-block">
@@ -68,12 +86,21 @@ export function Code({
           <div class="code-lines">
             {tokens.map((line, i) => {
               const lineNum = i + 1
-              const isHighlighted = highlightedLines?.has(lineNum)
-              const isDimmed = highlightedLines && !isHighlighted
+              const vis = lineVis.get(lineNum)
+              const isAnimated = vis !== undefined
+              const isVisible = !isAnimated || (
+                step !== undefined &&
+                step >= vis.visibleFrom &&
+                (vis.visibleUntil === undefined || step <= vis.visibleUntil)
+              )
+              const isHighlighted = highlightedLines?.has(lineNum) || (isAnimated && isVisible && vis.visibleFrom > 0 && !vis.noHighlight)
               const cls = [
                 'code-line',
                 isHighlighted && 'highlighted',
-                isDimmed && 'dimmed',
+                isAnimated && 'animated',
+                isAnimated && !mounted && 'no-transition',
+                isAnimated && vis.swap && 'swap',
+                isAnimated && (isVisible ? 'expanded' : 'collapsed'),
               ].filter(Boolean).join(' ')
               return (
                 <div key={i} class={cls}>

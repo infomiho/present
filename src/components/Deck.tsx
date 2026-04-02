@@ -87,6 +87,14 @@ export function Deck({ children }: { children: ComponentChildren }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [go])
 
+  const subs = subStepsMap.current
+  let phasesBefore = 0
+  for (let i = 0; i < current; i++) {
+    phasesBefore += 1 + (subs[i] ?? 0)
+  }
+  const currentPhase = phasesBefore + subStep + 1
+  const totalPhases = subs.reduce((sum, s) => sum + 1 + s, 0)
+
   return (
     <div class="deck">
       <div class="deck-grid" />
@@ -101,9 +109,10 @@ export function Deck({ children }: { children: ComponentChildren }) {
       <div class="progress">
         <div
           class="progress-bar"
-          style={{ width: `${((current + 1) / total) * 100}%` }}
+          style={{ width: `${(currentPhase / totalPhases) * 100}%` }}
         />
       </div>
+      <div class="slide-number">#{currentPhase} <span style={{ opacity: 0.5 }}>/ {totalPhases}</span></div>
     </div>
   )
 }

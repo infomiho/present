@@ -1,5 +1,6 @@
 export { Deck, Slide } from './Deck'
 export { Code } from './Code'
+export { MagicCode } from './MagicCode'
 export { Compare } from './Compare'
 export { PointList } from './PointList'
 export { QuestionList } from './QuestionList'
