@@ -20,7 +20,9 @@ Produce a table of slides:
 | # | Title | Content summary |
 |---|-------|----------------|
 
-Ask the user to approve, adjust, or reorder before proceeding.
+Before asking for approval, spawn a subagent (using the Agent tool) that is an expert in presentations and storytelling. It should follow the process in [references/improve-storytelling.md](references/improve-storytelling.md), analyzing the outline for narrative gaps and anti-patterns.
+
+Present the subagent's analysis alongside the outline. Apply the suggested changes, then show the revised outline for the user to approve, adjust, or reorder before proceeding.
 
 ## Phase 4: Scaffold
 
