@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'preact/hooks'
 import { createHighlighter, type HighlighterCore } from 'shiki'
+import { useTheme } from '../theme'
 
 type Token = { content: string; color?: string }
 
@@ -8,7 +9,7 @@ let highlighterPromise: Promise<HighlighterCore> | null = null
 function getHighlighter(lang: string) {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
-      themes: ['vitesse-dark'],
+      themes: ['vitesse-dark', 'vitesse-light'],
       langs: [lang],
     })
   }
@@ -51,17 +52,19 @@ export function Code({
 }) {
   const [tokens, setTokens] = useState<Token[][] | null>(null)
   const [mounted, setMounted] = useState(false)
+  const appTheme = useTheme()
+  const shikiTheme = appTheme === 'dark' ? 'vitesse-dark' : 'vitesse-light'
 
   useEffect(() => {
     let cancelled = false
     getHighlighter(lang).then(h => {
       if (!cancelled) {
-        const result = h.codeToTokens(children.trim(), { lang, theme: 'vitesse-dark' })
+        const result = h.codeToTokens(children.trim(), { lang, theme: shikiTheme })
         setTokens(result.tokens as Token[][])
       }
     })
     return () => { cancelled = true }
-  }, [children, lang])
+  }, [children, lang, shikiTheme])
 
   useEffect(() => {
     requestAnimationFrame(() => setMounted(true))

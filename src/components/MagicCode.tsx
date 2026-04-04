@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'preact/hooks'
 import { ShikiMagicMove } from 'shiki-magic-move/react'
 import { createHighlighter, type HighlighterCore } from 'shiki'
+import { useTheme } from '../theme'
 import 'shiki-magic-move/dist/style.css'
 
 let highlighterPromise: Promise<HighlighterCore> | null = null
@@ -8,7 +9,7 @@ let highlighterPromise: Promise<HighlighterCore> | null = null
 function getHighlighter(lang: string) {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
-      themes: ['vitesse-dark'],
+      themes: ['vitesse-dark', 'vitesse-light'],
       langs: [lang],
     }) as Promise<HighlighterCore>
   }
@@ -32,7 +33,7 @@ export function MagicCode({
   step = 0,
   highlights,
   lang = 'typescript',
-  theme = 'vitesse-dark',
+  theme,
   options,
 }: {
   codes: string[]
@@ -42,6 +43,8 @@ export function MagicCode({
   theme?: string
   options?: Record<string, unknown>
 }) {
+  const appTheme = useTheme()
+  const resolvedTheme = theme ?? (appTheme === 'dark' ? 'vitesse-dark' : 'vitesse-light')
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null)
   const [lastPos, setLastPos] = useState<{ start: number; end: number } | null>(null)
 
@@ -76,7 +79,7 @@ export function MagicCode({
         highlighter={highlighter}
         code={code}
         lang={lang}
-        theme={theme}
+        theme={resolvedTheme}
         options={{
           duration: 600,
           stagger: 0,

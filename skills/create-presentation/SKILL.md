@@ -7,7 +7,10 @@ You are creating a presentation for the user. Follow these phases in order.
 
 ## Phase 1: Intake
 
-Ask the user: **What are you presenting?**
+Ask the user:
+1. **What are you presenting?**
+2. **Do you have a brand color?** (hex code, company/product name to look up, or skip for the default gold)
+3. **Light or dark theme by default?** (the audience can toggle with `T` during the presentation)
 
 ## Phase 2: Content interview
 
@@ -36,6 +39,18 @@ npm install
 
 Use a short, descriptive directory name based on the topic (e.g., `ts-config-talk`, `q3-roadmap`).
 
+### Apply brand palette
+
+Generate the palette from the user's brand color:
+
+```bash
+npx -y hextimate "<brand-hex>"
+```
+
+This outputs a JSON object with `light` and `dark` keys. Paste the dark values into the `:root` block and the light values into the `[data-theme="light"]` block in `src/styles.css`. The variable names match 1:1, just drop them in.
+
+Set the default theme in `index.html` by updating `data-theme` on `<html>` (and the inline `<style>` anti-FOUC variables) to match the user's preference.
+
 ## Phase 5: Generate slides
 
 Edit `src/slides.tsx` to create the presentation content. Key guidelines:
@@ -45,7 +60,7 @@ Edit `src/slides.tsx` to create the presentation content. Key guidelines:
 - **Code is Shiki-powered.** Use the `Code` component with the `lang` prop. Languages are loaded on demand. Use `lineNumbers` for line numbers and `highlight="3-5, 8"` for line highlighting (accent border + tint, rest dims).
 - **Sub-steps** for progressive reveal: `<Slide subSteps={N}>{(step) => ...}</Slide>`. Components like `PointList` and `QuestionList` accept a `step` prop to control visible items. `ForkCard` accepts `highlighted` and `dimmed` for decision resolution.
 - **Custom components** are encouraged. If a slide needs a visualization that doesn't fit the existing components, create it directly in `src/slides.tsx` or as a new component in `src/components/`.
-- **Branding** is controlled by CSS variables in `src/styles.css`. The template ships a dark, code-forward theme. Adjust `--accent`, `--accent-rgb`, and related variables to match the user's brand if they ask.
+- **Branding** is handled in Phase 4 via `hextimate`. The palette is already applied at this point. Use `--accent`, `--positive`, `--negative`, `--warning` and their `-strong`/`-weak` variants for semantic coloring.
 - Keep slide content focused. One idea per slide.
 - Use `className="centered"` on `Slide` for title/section slides.
 - Use `<div class="slide-label">Label</div>` for the small label at the top of content slides.

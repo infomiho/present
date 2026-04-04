@@ -1,5 +1,6 @@
 import { toChildArray, cloneElement, type VNode, type ComponentChildren } from 'preact'
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
+import { ThemeContext, type Theme } from '../theme'
 
 export function Slide({
   children,
@@ -38,6 +39,9 @@ export function Deck({ children }: { children: ComponentChildren }) {
   const total = slides.length
   const [current, setCurrent] = useState(0)
   const [subStep, setSubStep] = useState(0)
+  const [theme, setTheme] = useState<Theme>(() =>
+    (document.documentElement.getAttribute('data-theme') as Theme) || 'dark'
+  )
 
   const currentRef = useRef(current)
   const subStepRef = useRef(subStep)
@@ -48,6 +52,14 @@ export function Deck({ children }: { children: ComponentChildren }) {
   subStepsMap.current = slides.map(s => (s as VNode)?.props?.subSteps ?? 0)
 
   const lastStepBySlide = useRef<Record<number, number>>({})
+
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark'
+      document.documentElement.setAttribute('data-theme', next)
+      return next
+    })
+  }, [])
 
   const go = useCallback((dir: number) => {
     const cur = currentRef.current
@@ -82,10 +94,13 @@ export function Deck({ children }: { children: ComponentChildren }) {
         e.preventDefault()
         go(-1)
       }
+      if (e.key === 't' || e.key === 'T') {
+        toggleTheme()
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [go])
+  }, [go, toggleTheme])
 
   const subs = subStepsMap.current
   let phasesBefore = 0
@@ -96,23 +111,28 @@ export function Deck({ children }: { children: ComponentChildren }) {
   const totalPhases = subs.reduce((sum, s) => sum + 1 + s, 0)
 
   return (
-    <div class="deck">
-      <div class="deck-grid" />
-      {slides.map((slide, i) =>
-        cloneElement(slide as VNode, {
-          key: i,
-          _active: i === current,
-          _exit: i === current - 1,
-          _step: i === current ? subStep : (lastStepBySlide.current[i] ?? 0),
-        })
-      )}
-      <div class="progress">
-        <div
-          class="progress-bar"
-          style={{ width: `${(currentPhase / totalPhases) * 100}%` }}
-        />
+    <ThemeContext.Provider value={theme}>
+      <div class="deck">
+        <div class="deck-grid" />
+        {slides.map((slide, i) =>
+          cloneElement(slide as VNode, {
+            key: i,
+            _active: i === current,
+            _exit: i === current - 1,
+            _step: i === current ? subStep : (lastStepBySlide.current[i] ?? 0),
+          })
+        )}
+        <div class="progress">
+          <div
+            class="progress-bar"
+            style={{ width: `${(currentPhase / totalPhases) * 100}%` }}
+          />
+        </div>
+        <button class="theme-toggle" onClick={toggleTheme} title="Toggle theme (T)">
+          {theme === 'dark' ? '\u2600' : '\u263E'}
+        </button>
+        <div class="slide-number">#{currentPhase} <span style={{ opacity: 0.5 }}>/ {totalPhases}</span></div>
       </div>
-      <div class="slide-number">#{currentPhase} <span style={{ opacity: 0.5 }}>/ {totalPhases}</span></div>
-    </div>
+    </ThemeContext.Provider>
   )
 }
