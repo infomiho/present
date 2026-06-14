@@ -11,10 +11,10 @@ npm install
 npm run dev
 ```
 
-## With the Claude Code skill
+## With the presentation skill
 
 ```bash
-npx skills add infomiho/present
+npx skills add infomiho/skills --skill create-presentation
 ```
 
-Then run `/create-presentation` in Claude Code.
+Then run `/create-presentation` in your agent.
